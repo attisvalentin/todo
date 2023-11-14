@@ -13,11 +13,11 @@ class TodoController extends Controller
     // all items handling, contains filtering, pagination and default list
     public function items(Request $request) {
         switch($request) {
+            case $request->query->has('page') && $request->query->has('per_page') && $request->query->count() == 2:
+                return $this->getPaginatedItems($request);
+                break;
             case $request->query->has('completed') or $request->query->has('name'):
                 return $this->getItemsByNameStatus($request);
-                break;
-            case $request->query->has('page') && $request->query->has('per_page'):
-                return $this->getPaginatedItems($request);
                 break;
             default:
                 return $this->getAllItems();
@@ -125,9 +125,9 @@ class TodoController extends Controller
         $validateInput = $request->all();
         $validator = $this->validator($validateInput);
 
-        //in purifier.php file the AutoFormat.AutoParagraph is setted to false.
-        //This is because the purifier added <p> tags to the text.
-        //if its needed to add <p> tags to the text, then the AutoFormat.AutoParagraph should be setted to true.
+        //in config/purifier.php file the AutoFormat.AutoParagraph is setted to false.
+        //This is because the purifier added <p> tags to the raw texts.
+        //if its needed to add <p> tags to the raw texts, then the AutoFormat.AutoParagraph should be setted to true.
         $name = Purifier::clean($request->name); 
         $description = Purifier::clean($request->description);
 
